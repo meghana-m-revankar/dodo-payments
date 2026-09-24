@@ -1,23 +1,25 @@
 import { useState } from 'react'
-import { CheckoutModal } from './components/CheckoutModal'
-import type { Product, CheckoutConfig } from './types'
 import './App.css'
-
+declare global {
+  interface Window {
+    DodoCheckout: {
+      open: (opts: {
+        productId: string
+        onSuccess: (d: { sessionId: string }) => void
+        onClose:   (d: { reason: string }) => void
+        onError:   (d: { code: string; message: string }) => void
+      }) => void
+    }
+  }
+}
 interface LogEntry {
   type: 'success' | 'close' | 'error'
   message: string
   time: string
 }
 
-const product: Product = {
-  id: 'prod_001',
-  name: 'Pro Plan',
-  price: 29.99,
-  currency: 'USD'
-}
-
 export default function App() {
-  const [showModal, setShowModal] = useState(false)
+ 
   const [logs, setLogs] = useState<LogEntry[]>([])
 
   function addLog(type: LogEntry['type'], message: string) {
@@ -25,26 +27,14 @@ export default function App() {
     setLogs(prev => [{ type, message, time }, ...prev])
   }
 
-  const config: CheckoutConfig = {
-    productId: product.id,
-    onSuccess: ({ sessionId }) => {
-      // wait for confetti + sweetalert to show first
-      setTimeout(() => {
-        addLog('success', `Payment success • ${sessionId}`)
-        setShowModal(false)
-      }, 2000)
-    },
-    onClose: ({ reason }) => {
-      addLog('close', `Modal closed • ${reason}`)
-    },
-    onError: ({ code, message }) => {
-      addLog('error', `Error • ${code}: ${message}`)
-    }
-  }
 
-  function handleOpen() {
-    if (showModal) return
-    setShowModal(true)
+  function handleBuy() {
+    window.DodoCheckout.open({
+      productId: 'prod_001',
+      onSuccess: ({ sessionId }) => addLog('success', `Payment success • ${sessionId}`),
+      onClose:   ({ reason })    => addLog('close',   `Modal closed • ${reason}`),
+      onError:   ({ code, message }) => addLog('error', `Error • ${code}: ${message}`)
+    })
   }
 
   return (
@@ -93,7 +83,7 @@ export default function App() {
             color: '#0E100C',
             margin: '0 0 8px'
           }}>
-            {product.name}
+           Pro Plan
           </h2>
 
           <div style={{
@@ -114,7 +104,7 @@ export default function App() {
           </p>
 
           <button
-            onClick={handleOpen}
+            onClick={handleBuy}
             style={{
               width: '100%',
               background: '#0E100C',
@@ -191,17 +181,8 @@ export default function App() {
 
       </div>
 
-      {/* MODAL */}
-      {showModal && (
-        <CheckoutModal
-          product={product}
-          config={config}
-          onClose={() => {
-            setShowModal(false)
-            addLog('close', 'Modal closed • user_closed')
-          }}
-        />
-      )}
+      
+  
     </div>
   )
 }

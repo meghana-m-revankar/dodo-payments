@@ -3,6 +3,14 @@ import { PaymentStatus } from './PaymentStatus'
 import { usePayment } from '../hooks/usePayment'
 import type { CardDetails, CheckoutConfig, Product } from '../types'
 import { Lock, Globe, ShieldCheck, X } from 'lucide-react'
+// detect if running inside SDK iframe
+const inIframe = window !== window.parent
+
+function emit(type: string, payload: Record<string, unknown>) {
+  if (inIframe) {
+    window.parent.postMessage({ type, payload }, '*')
+  }
+}
 interface Props {
   product: Product
   config: CheckoutConfig
@@ -17,20 +25,29 @@ export function CheckoutModal({ product, config, onClose }: Props) {
   
     if (result?.success && result.sessionId) {
       setTimeout(() => {
-        config.onSuccess({ sessionId: result.sessionId! })
+        if (inIframe) {
+          emit('CHECKOUT_SUCCESS', { sessionId: result.sessionId! })
+        } else {
+          config.onSuccess({ sessionId: result.sessionId! })
+        }
       }, 1500)
     }
-  
+    
     if (result?.success === false && result.code) {
-      config.onError({
-        code: result.code,
-        message: 'Payment could not be completed'
-      })
+      if (inIframe) {
+        emit('CHECKOUT_ERROR', { code: result.code, message: 'Payment could not be completed' })
+      } else {
+        config.onError({ code: result.code, message: 'Payment could not be completed' })
+      }
     }
   }
   function handleClose() {
-    config.onClose({ reason: 'user_closed' })
-    onClose()
+    if (inIframe) {
+      emit('CHECKOUT_CLOSE', { reason: 'user_closed' })
+    } else {
+      config.onClose({ reason: 'user_closed' })
+      onClose()
+    }
   }
 
   const isProcessing = status === 'processing'
