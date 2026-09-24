@@ -1,32 +1,43 @@
-# React + TypeScript + Vite
+# Dodo Payments — Tiny Embeddable Checkout
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A responsive, payment-provider-style checkout experience built as part of the Dodo Payments frontend assignment.
 
-Currently, two official plugins are available:
+The project focuses on creating a clean, embeddable checkout UI with realistic payment states, card interaction, validation, retry handling, responsive design, and security-conscious frontend practices.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Tech Stack
 
-## React Compiler
+- React
+- TypeScript
+- Vite
+- Node.js / npm
+- Custom CSS
+- Lucide React — icons
+- SweetAlert2 — user-friendly alerts and payment notifications
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the Oxlint configuration
+### Checkout UI
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+- Clean modern payment checkout interface
+- Responsive design for desktop, tablet and mobile
+- Product/order summary
+- Card payment form
+- Card number formatting
+- Expiry date and CVV inputs
+- Card brand detection
+- Interactive 3D card preview
+- Front/back card flip interaction
+- Masked card information where appropriate
+- Secure checkout/trust indicators
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+### Payment Flow
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+The checkout demonstrates a realistic payment lifecycle:
+
+Idle
+  ↓
+Processing
+  ↓
+Success
+  ↓
+Payment Complete
